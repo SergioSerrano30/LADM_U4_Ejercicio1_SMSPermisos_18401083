@@ -2,6 +2,7 @@ package mx.tecnm.ladm_u4_ejercicio1_smspermisos_18401083
 
 import android.app.Activity
 import android.app.AlertDialog
+import android.content.Context
 import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -20,7 +21,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         if (ActivityCompat.checkSelfPermission(this,
-                android.Manifest.permission.RECEIVE_SMS) != PackageManager.PERMISSION_DENIED){
+                android.Manifest.permission.RECEIVE_SMS) != PackageManager.PERMISSION_GRANTED){
             ActivityCompat.requestPermissions(this, arrayOf(
                 android.Manifest.permission.RECEIVE_SMS
             ),siPermisoReceive)
@@ -28,13 +29,13 @@ class MainActivity : AppCompatActivity() {
 
         binding.btnEnviar.setOnClickListener {
             if (ActivityCompat.checkSelfPermission(this,
-                android.Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_DENIED){
+                android.Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED){
                 ActivityCompat.requestPermissions(this, arrayOf(
                     android.Manifest.permission.SEND_SMS
                 ),siPermiso)
             }
             else{
-                envioSMS()
+                envioSMS(this)
             }
         }
     }
@@ -46,10 +47,12 @@ class MainActivity : AppCompatActivity() {
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == siPermiso){
-            envioSMS()
+            envioSMS(this)
         }
         if (requestCode == siPermisoReceive){
-            receiveSMS()
+            Toast.makeText(this,"PERMISO DE RECIBIR",Toast.LENGTH_LONG)
+                .show()
+            //receiveSMS()
         }
     }
 
@@ -59,11 +62,14 @@ class MainActivity : AppCompatActivity() {
             .show()
     }
 
-    private fun envioSMS() {
+    private fun envioSMS(context: Context) {
         //5556
         SmsManager.getDefault().sendTextMessage(binding.txtCelular.text.toString(),null,
             binding.txtMensaje.text.toString(),null,null)
         Toast.makeText(this,"Enviado el SMS",Toast.LENGTH_LONG).show()
+        binding.txtMensaje.text.clear()
+        binding.txtCelular.text.clear()
+
     }
 
 }

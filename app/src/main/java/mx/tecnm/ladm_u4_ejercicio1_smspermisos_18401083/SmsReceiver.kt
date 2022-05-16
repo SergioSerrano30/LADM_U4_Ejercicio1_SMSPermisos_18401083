@@ -8,25 +8,29 @@ import android.os.Build
 import android.telephony.SmsMessage
 import android.widget.Toast
 
-class SmsReceiver: BroadcastReceiver() {
-    override fun onReceive(context: Context, data: Intent) {
-        val extras = data.extras
+class SmsReceiver : BroadcastReceiver() {
+    override fun onReceive(p0: Context, p1: Intent) {
+        val extras = p1.extras
 
-        if (extras !=null){
+        if(extras!=null){
             val sms = extras.get("pdus") as Array<Any>
-            for (indice in sms.indices){
+            for(indice in sms.indices){
                 val formato = extras.getString("format")
-                val smsMensaje =  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+
+                val mensajeSMS = if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.M){
                     SmsMessage.createFromPdu(sms[indice] as ByteArray,formato)
-                }else{
+                } else {
                     SmsMessage.createFromPdu(sms[indice] as ByteArray)
                 }
-                var celularOrigen = smsMensaje.originatingAddress
-                var contenidoSMS = smsMensaje.messageBody.toString()
-                AlertDialog.Builder(context)
-                    .setMessage("Entró mensaje: \n ${contenidoSMS}")
-                    .show()
+
+                val celularOrigen = mensajeSMS.originatingAddress
+                val contenidoSMS = mensajeSMS.displayMessageBody
+
+                Toast.makeText(p0,"ORIGEN: ${celularOrigen}, TEXTO:\n${contenidoSMS}",
+                    Toast.LENGTH_LONG).show()
+
             }
         }
+
     }
 }
