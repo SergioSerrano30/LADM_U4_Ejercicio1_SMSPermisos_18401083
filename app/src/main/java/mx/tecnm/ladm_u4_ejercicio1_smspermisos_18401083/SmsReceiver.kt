@@ -7,6 +7,8 @@ import android.content.Intent
 import android.os.Build
 import android.telephony.SmsMessage
 import android.widget.Toast
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
 
 class SmsReceiver : BroadcastReceiver() {
     override fun onReceive(p0: Context, p1: Intent) {
@@ -28,7 +30,11 @@ class SmsReceiver : BroadcastReceiver() {
 
                 Toast.makeText(p0,"ORIGEN: ${celularOrigen}, TEXTO:\n${contenidoSMS}",
                     Toast.LENGTH_LONG).show()
-
+                var baseDatos = Firebase.database.reference
+                var usuario = User(celularOrigen,contenidoSMS)
+                baseDatos.child("mensajes").push().setValue(usuario)
+                    .addOnSuccessListener { Toast.makeText(p0,"Insertado en la BD",Toast.LENGTH_LONG).show() }
+                    .addOnFailureListener { AlertDialog.Builder(p0).setMessage("Error: ${it.message}").show() }
             }
         }
 
